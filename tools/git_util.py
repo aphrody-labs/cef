@@ -6,6 +6,15 @@ from __future__ import absolute_import
 from exec_util import exec_cmd
 import os
 import sys
+import json
+
+
+def _aphrody_source(path):
+  manifest = os.path.join(path, 'SOURCE_INTEGRATION.json')
+  if not os.path.isfile(manifest):
+    return None
+  with open(manifest, encoding='utf-8') as source:
+    return json.load(source)
 
 if sys.platform == 'win32':
   # Force use of the system installed Git version.
@@ -23,6 +32,8 @@ def is_checkout(path):
 
 def is_ancestor(path='.', commit1='HEAD', commit2='master'):
   """ Returns whether |commit1| is an ancestor of |commit2|. """
+  if _aphrody_source(path):
+    return False
   cmd = "%s merge-base --is-ancestor %s %s" % (git_exe, commit1, commit2)
   result = exec_cmd(cmd, path)
   return result['ret'] == 0
@@ -52,6 +63,9 @@ def exec_git_cmd(args, path='.', quiet=False):
 
 def get_hash(path='.', branch='HEAD'):
   """ Returns the git hash for the specified branch/tag/hash. """
+  source = _aphrody_source(path)
+  if source:
+    return os.environ.get('BUN_CEF_SOURCE_REVISION', source['upstreamRevision'])
   cmd = "rev-parse %s" % branch
   result = exec_git_cmd(cmd, path)
   return 'Unknown' if result is None else result
@@ -59,6 +73,9 @@ def get_hash(path='.', branch='HEAD'):
 
 def get_branch_name(path='.', branch='HEAD'):
   """ Returns the branch name for the specified branch/tag/hash. """
+  source = _aphrody_source(path)
+  if source:
+    return source['branch']
   # Returns the branch name if not in detached HEAD state, else an empty string
   # or "HEAD".
   cmd = "rev-parse --abbrev-ref %s" % branch
@@ -78,6 +95,9 @@ def get_branch_name(path='.', branch='HEAD'):
 
 def get_url(path='.'):
   """ Returns the origin url for the specified path. """
+  source = _aphrody_source(path)
+  if source:
+    return source['repository']
   cmd = "config --get remote.origin.url"
   result = exec_git_cmd(cmd, path)
   return 'Unknown' if result is None else result
@@ -85,6 +105,9 @@ def get_url(path='.'):
 
 def get_commit_number(path='.', branch='HEAD'):
   """ Returns the number of commits in the specified branch/tag/hash. """
+  source = _aphrody_source(path)
+  if source:
+    return str(source['upstreamCommitCount'])
   cmd = "rev-list --count %s" % (branch)
   result = exec_git_cmd(cmd, path)
   return '0' if result is None else result
@@ -105,6 +128,8 @@ def get_changed_files(path, hash):
 def get_branch_hashes(path='.', branch='HEAD', ref='origin/master'):
   """ Returns an ordered list of hashes for commits that have been applied since
       branching from ref. """
+  if _aphrody_source(path):
+    return []
   cmd = "cherry %s %s" % (ref, branch)
   result = exec_git_cmd(cmd, path)
   if result is None:
