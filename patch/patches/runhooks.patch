@@ -2,7 +2,20 @@ diff --git build/toolchain/win/setup_toolchain.py build/toolchain/win/setup_tool
 index e7651ec9f8b538d0eca24b74fef7cd40771da72e..ae80221a4aa3e4e7bd20d28a34a3e3f008f7e2e0 100644
 --- build/toolchain/win/setup_toolchain.py
 +++ build/toolchain/win/setup_toolchain.py
-@@ -181,18 +181,20 @@ def _LoadToolchainEnv(cpu, toolchain_root, sdk_dir, target_store):
+@@ -117,3 +117,12 @@ def _LoadToolchainEnv(cpu, toolchain_root, sdk_dir, target_store):
+     assert cpu in ('x86', 'x64', 'arm', 'arm64')
++    prepared_dir = os.environ.get('CEF_MSVC_ENV_DIR')
++    if prepared_dir:
++        if os.environ.get('CEF_VCVARS') != 'none':
++            raise Exception('CEF_MSVC_ENV_DIR requires CEF_VCVARS=none')
++        with open(os.path.join(prepared_dir, cpu + '.json'), encoding='utf-8') as source:
++            prepared = json.load(source)
++        variables = '\n'.join('%s=%s' % (key, value) for key, value in prepared.items())
++        return _ExtractImportantEnvironment(variables)
++
+     if bool(int(os.environ.get('DEPOT_TOOLS_WIN_TOOLCHAIN', 1))) and sdk_dir:
+         # Load environment from json file.
+@@ -181,18 +190,20 @@ def _LoadToolchainEnv(cpu, toolchain_root, sdk_dir, target_store):
                      del os.environ['LIB']
                  if 'LIBPATH' in os.environ:
                      del os.environ['LIBPATH']
