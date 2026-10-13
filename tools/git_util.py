@@ -65,7 +65,10 @@ def get_hash(path='.', branch='HEAD'):
   """ Returns the git hash for the specified branch/tag/hash. """
   source = _aphrody_source(path)
   if source:
-    return os.environ.get('BUN_CEF_SOURCE_REVISION', source['upstreamRevision'])
+    revision = os.environ.get('BUN_CEF_SOURCE_REVISION')
+    if not revision or len(revision) != 40 or any(c not in '0123456789abcdef' for c in revision):
+      raise RuntimeError('BUN_CEF_SOURCE_REVISION must identify the pinned source fork')
+    return revision
   cmd = "rev-parse %s" % branch
   result = exec_git_cmd(cmd, path)
   return 'Unknown' if result is None else result
@@ -107,7 +110,7 @@ def get_commit_number(path='.', branch='HEAD'):
   """ Returns the number of commits in the specified branch/tag/hash. """
   source = _aphrody_source(path)
   if source:
-    return str(source['upstreamCommitCount'])
+    return str(source['sourceCommitCount'])
   cmd = "rev-list --count %s" % (branch)
   result = exec_git_cmd(cmd, path)
   return '0' if result is None else result

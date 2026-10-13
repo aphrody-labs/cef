@@ -412,10 +412,10 @@ index f724bf914a934de95d71eda0c17cc475b51a2eae..8d9bee4da75693d32ca8c99b87690382
      "//components/policy/proto:policy_common_definitions_compile_proto",
      "//third_party/protobuf:protobuf_lite",
 diff --git components/policy/tools/generate_policy_source.py components/policy/tools/generate_policy_source.py
-index 040c3e2a6d5c723f5d4e214a8a77c5906ceeb2f8..1658a008e8aa40aa74e4e3c6de654fbe3aebb86a 100755
+index 0f77424e427..735d96632fc 100644
 --- components/policy/tools/generate_policy_source.py
 +++ components/policy/tools/generate_policy_source.py
-@@ -485,6 +485,7 @@ def _WritePolicyConstantHeader(all_policies, policy_atomic_groups,
+@@ -558,6 +558,7 @@ def _WritePolicyConstantHeader(
  #include <cstdint>
  #include <string>
  
@@ -423,35 +423,31 @@ index 040c3e2a6d5c723f5d4e214a8a77c5906ceeb2f8..1658a008e8aa40aa74e4e3c6de654fbe
  #include "components/policy/core/common/policy_details.h"
  #include "components/policy/core/common/policy_map.h"
  
-@@ -507,9 +508,11 @@ namespace {namespace} {{
- ''')
+@@ -581,9 +582,11 @@ namespace {namespace} {{
  
    if target_platform == 'win':
--    f.write('// The windows registry path where Chrome policy '
-+    f.write('#if !BUILDFLAG(ENABLE_CEF)\n'
-+            '// The windows registry path where Chrome policy '
-             'configuration resides.\n'
--            'extern const wchar_t kRegistryChromePolicyKey[];\n')
-+            'extern const wchar_t kRegistryChromePolicyKey[];\n'
-+            '#endif\n')
+     f.write(
++      '#if !BUILDFLAG(ENABLE_CEF)\n'
+       '// The windows registry path where Chrome policy '
+       'configuration resides.\n'
+       'extern const wchar_t kRegistryChromePolicyKey[];\n'
++      '#endif\n'
+     )
  
    f.write('''#if BUILDFLAG(IS_CHROMEOS)
- // Sets default profile policies values for enterprise users.
-@@ -1206,7 +1209,8 @@ namespace {namespace} {{
-     f.write('}  // namespace\n\n')
+@@ -1395,6 +1398,7 @@ namespace {namespace} {{
  
    if target_platform == 'win':
--    f.write('#if BUILDFLAG(GOOGLE_CHROME_BRANDING)\n'
-+    f.write('#if !BUILDFLAG(ENABLE_CEF)\n'
-+            '#if BUILDFLAG(GOOGLE_CHROME_BRANDING)\n'
-             'const wchar_t kRegistryChromePolicyKey[] = '
-             'L"' + CHROME_POLICY_KEY + '";\n'
-             '#elif BUILDFLAG(GOOGLE_CHROME_FOR_TESTING_BRANDING)\n'
-@@ -1215,6 +1219,7 @@ namespace {namespace} {{
-             '#else\n'
-             'const wchar_t kRegistryChromePolicyKey[] = '
-             'L"' + CHROMIUM_POLICY_KEY + '";\n'
-+            '#endif\n'
-             '#endif\n\n')
+     f.write(
++      '#if !BUILDFLAG(ENABLE_CEF)\n'
+       '#if BUILDFLAG(GOOGLE_CHROME_BRANDING)\n'
+       'const wchar_t kRegistryChromePolicyKey[] = '
+       'L"' + CHROME_POLICY_KEY + '";\n'
+@@ -1404,6 +1408,7 @@ namespace {namespace} {{
+       '#else\n'
+       'const wchar_t kRegistryChromePolicyKey[] = '
+       'L"' + CHROMIUM_POLICY_KEY + '";\n'
++      '#endif\n'
+       '#endif\n\n'
+     )
  
-   # Setting enterprise defaults code generation.

@@ -3,13 +3,13 @@ index e699a6a394fd7a41b441ff6edeb1a17bfe51bc85..0dd4dea5dfbe7f9c22a717959883a217
 --- components/embedder_support/user_agent_utils.cc
 +++ components/embedder_support/user_agent_utils.cc
 @@ -26,6 +26,7 @@
- #include "base/version.h"
+ #include "base/system/sys_info.h"
  #include "build/branding_buildflags.h"
  #include "build/build_config.h"
 +#include "cef/libcef/features/features.h"
- #include "components/embedder_support/pref_names.h"
  #include "components/embedder_support/switches.h"
- #include "components/policy/core/common/policy_pref_names.h"
+ #include "components/version_info/version_info.h"
+ #include "net/http/http_util.h"
 @@ -54,6 +55,10 @@
  #include <sys/utsname.h>
  #endif

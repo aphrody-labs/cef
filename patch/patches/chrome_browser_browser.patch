@@ -124,58 +124,194 @@ index 7613579e79ca9afa3936ae2210e164c811d12467..4c4d286503098454abe43e5a4ac15652
    OverrideAndSyncDevToolsRendererPrefs();
  }
 diff --git chrome/browser/ui/BUILD.gn chrome/browser/ui/BUILD.gn
-index 8f08231710621490d173d8fe83371d53e7ce1950..e40ee6a11e5e7062328edd1b5944179ba4462592 100644
+index 9209b135c5c..898b45d1edb 100644
 --- chrome/browser/ui/BUILD.gn
 +++ chrome/browser/ui/BUILD.gn
-@@ -8,6 +8,7 @@ import("//build/config/compiler/compiler.gni")
- import("//build/config/features.gni")
- import("//build/config/ozone.gni")
- import("//build/config/ui.gni")
-+import("//cef/libcef/features/features.gni")
- import("//chrome/browser/buildflags.gni")
- import("//chrome/common/features.gni")
- import("//components/captive_portal/core/features.gni")
-@@ -1589,6 +1590,10 @@ static_library("ui") {
-     "//build/config/compiler:wexit_time_destructors",
-   ]
+@@ -2,6 +2,7 @@
+ # Use of this source code is governed by a BSD-style license that can be
+ # found in the LICENSE file.
  
++import("//cef/libcef/features/features.gni")
+ import("//build/config/buildflags_paint_preview.gni")
+ import("//build/config/chrome_build.gni")
+ import("//build/config/compiler/compiler.gni")
+@@ -121,6 +122,11 @@ if (!is_android) {
+       "//ui/base",
+       "//url",
+     ]
++    deps += [ "//cef/libcef/features:buildflags" ]
++    if (enable_cef) {
++      configs += [ "//cef/libcef/features:config" ]
++      deps += [ "//cef/libcef/features:deps" ]
++    }
+   }
+ 
+   source_set("chrome_web_modal_dialog_manager_delegate") {
+@@ -161,6 +167,11 @@ if (!is_android) {
+       "//components/keep_alive_registry",
+       "//printing/buildflags",
+     ]
++    deps += [ "//cef/libcef/features:buildflags" ]
++    if (enable_cef) {
++      configs += [ "//cef/libcef/features:config" ]
++      deps += [ "//cef/libcef/features:deps" ]
++    }
+   }
+ 
+   source_set("intent_picker_tab_helper") {
+@@ -1327,6 +1338,7 @@ source_set("download_close_type") {
+ 
+ source_set("tab_helpers") {
+   public = [ "tab_helpers.h" ]
++  public_deps = [ "//cef/libcef/features:buildflags" ]
+ }
+ 
+ source_set("tab_helpers_impl") {
+@@ -1509,6 +1521,12 @@ if (!is_android) {
+       "//ui/gfx/geometry",
+       "//url",
+     ]
++    public_deps += [ "//cef/libcef/features:buildflags" ]
++    if (enable_cef) {
++      visibility += [ "//cef/*" ]
++      public_configs = [ "//cef/libcef/features:config" ]
++      deps = [ "//cef/libcef/features:deps" ]
++    }
+   }
+ 
+   source_set("core") {
+@@ -1632,6 +1650,17 @@ if (!is_android) {
+     if (enable_captive_portal_detection) {
+       deps += [ "//components/captive_portal/content" ]
+     }
++    deps += [ "//cef/libcef/features:buildflags" ]
++    if (enable_cef) {
++      configs += [ "//cef/libcef/features:config" ]
++      deps += [ "//cef/libcef/features:deps" ]
++    }
++    if (enable_cef) {
++      deps += [ "//cef:cef_resources" ]
++    }
++    if (enable_printing) {
++      deps += [ "//components/printing/common:mojo_interfaces" ]
++    }
+   }
+ }
+ 
+diff --git chrome/browser/ui/browser_ui_controller/BUILD.gn chrome/browser/ui/browser_ui_controller/BUILD.gn
+index 6ea2a379145..f4d61e08a52 100644
+--- chrome/browser/ui/browser_ui_controller/BUILD.gn
++++ chrome/browser/ui/browser_ui_controller/BUILD.gn
+@@ -2,6 +2,7 @@
+ # Use of this source code is governed by a BSD-style license that can be
+ # found in the LICENSE file.
+ 
++import("//cef/libcef/features/features.gni")
+ assert(!is_android)
+ 
+ source_set("browser_ui_controller") {
+@@ -39,4 +40,9 @@ source_set("impl") {
+     "//chrome/browser/ui/web_applications",
+     "//content/public/browser",
+   ]
++  deps += [ "//cef/libcef/features:buildflags" ]
 +  if (enable_cef) {
 +    configs += [ "//cef/libcef/features:config" ]
++    deps += [ "//cef/libcef/features:deps" ]
 +  }
-+
-   public_deps = [
-     # WARNING WARNING WARNING
-     # New dependencies outside of //chrome/browser should be added to
-@@ -1639,6 +1644,7 @@ static_library("ui") {
-     ":ui_features",
-     ":url_identity",
-     "//base",
-+    "//cef/libcef/features:buildflags",
-     "//chrome/app:chrome_dll_resources",
-     "//chrome/app/resources:platform_locale_settings",
-     "//chrome/app/theme:chrome_unscaled_resources",
-@@ -1941,6 +1947,13 @@ static_library("ui") {
-     ]
-   }
+ }
+diff --git chrome/browser/ui/browser_window/BUILD.gn chrome/browser/ui/browser_window/BUILD.gn
+index 1492bc76d26..12d365facb3 100644
+--- chrome/browser/ui/browser_window/BUILD.gn
++++ chrome/browser/ui/browser_window/BUILD.gn
+@@ -2,6 +2,7 @@
+ # Use of this source code is governed by a BSD-style license that can be
+ # found in the LICENSE file.
  
-+  if (enable_cef) {
-+    deps += [
-+      "//cef:cef_resources",
-+      "//cef/libcef/features:deps",
-+    ]
-+  }
-+
-   if (!is_android) {
-     deps += [
-       ":ui_controller_factory",
-@@ -4682,6 +4695,7 @@ static_library("ui") {
-     deps += [
-       "//chrome/browser/printing",
-       "//chrome/browser/printing:impl",
-+      "//components/printing/common:mojo_interfaces",
++import("//cef/libcef/features/features.gni")
+ import("//chrome/common/features.gni")
+ 
+ # This is the public interface for a browser window. Most features in
+@@ -39,6 +40,7 @@ source_set("browser_window") {
+       "//ui/base:types",
      ]
-     allow_circular_includes_from += [ "//chrome/browser/printing:impl" ]
    }
++  public_deps += [ "//cef/libcef/features:buildflags" ]
+ }
+ 
+ source_set("create_browser_window") {
+diff --git chrome/browser/ui/browser_window/internal/BUILD.gn chrome/browser/ui/browser_window/internal/BUILD.gn
+index d4f1138108a..146adb96457 100644
+--- chrome/browser/ui/browser_window/internal/BUILD.gn
++++ chrome/browser/ui/browser_window/internal/BUILD.gn
+@@ -2,6 +2,7 @@
+ # Use of this source code is governed by a BSD-style license that can be
+ # found in the LICENSE file.
+ 
++import("//cef/libcef/features/features.gni")
+ import("//build/config/chrome_build.gni")
+ import("//chrome/common/features.gni")
+ 
+@@ -247,6 +248,11 @@ source_set("internal") {
+       "//chrome/browser/ui/views/frame:browser_view_header",
+     ]
+   }
++  deps += [ "//cef/libcef/features:buildflags" ]
++  if (enable_cef) {
++    configs += [ "//cef/libcef/features:config" ]
++    deps += [ "//cef/libcef/features:deps" ]
++  }
+ }
+ 
+ source_set("unit_tests") {
+diff --git chrome/browser/ui/window_feature_controller/BUILD.gn chrome/browser/ui/window_feature_controller/BUILD.gn
+index 8fe49bb5e61..1afdee52628 100644
+--- chrome/browser/ui/window_feature_controller/BUILD.gn
++++ chrome/browser/ui/window_feature_controller/BUILD.gn
+@@ -2,6 +2,7 @@
+ # Use of this source code is governed by a BSD-style license that can be
+ # found in the LICENSE file.
+ 
++import("//cef/libcef/features/features.gni")
+ import("//build/config/ui.gni")
+ 
+ assert(!is_android)
+@@ -20,6 +21,11 @@ source_set("window_feature_controller") {
+     "//chrome/browser/ui/fullscreen",
+     "//chrome/browser/ui/web_applications",
+   ]
++  deps += [ "//cef/libcef/features:buildflags" ]
++  if (enable_cef) {
++    configs += [ "//cef/libcef/features:config" ]
++    deps += [ "//cef/libcef/features:deps" ]
++  }
+ }
+ 
+ source_set("unit_tests") {
+diff --git chrome/browser/devtools/BUILD.gn chrome/browser/devtools/BUILD.gn
+index 83f42ae51fb..96b12cf9022 100644
+--- chrome/browser/devtools/BUILD.gn
++++ chrome/browser/devtools/BUILD.gn
+@@ -2,6 +2,7 @@
+ # Use of this source code is governed by a BSD-style license that can be
+ # found in the LICENSE file.
+ 
++import("//cef/libcef/features/features.gni")
+ import("//content/browser/devtools/features.gni")
+ import("//extensions/buildflags/buildflags.gni")
+ import("//printing/buildflags/buildflags.gni")
+@@ -535,6 +536,11 @@ static_library("devtools") {
+   if (!is_android) {
+     deps += [ "//chrome/browser/ui:browser_tab_strip_tracker" ]
+   }
++  deps += [ "//cef/libcef/features:buildflags" ]
++  if (enable_cef) {
++    configs += [ "//cef/libcef/features:config" ]
++    deps += [ "//cef/libcef/features:deps" ]
++  }
+ }
+ 
+ static_library("test_support") {
 diff --git chrome/browser/ui/browser.cc chrome/browser/ui/browser.cc
 index 07de580deb67c305fdbf25ddb9c168b3cc646a4f..2a0c9a520c3d23e006f2d7ea5ef9e52df749ce14 100644
 --- chrome/browser/ui/browser.cc
@@ -410,21 +546,22 @@ index 039a885a6ef00dacccfce6034b500fcf42bf9df7..15004010537c6251db14c063c010648a
    NavigateParams params(browser, std::move(new_contents));
    params.source_contents = source_contents;
    params.url = target_url;
-@@ -132,8 +152,6 @@ void CloseWebContents(BrowserWindowInterface* browser,
+@@ -132,6 +152,7 @@ void CloseWebContents(BrowserWindowInterface* browser,
                        bool add_to_history) {
    int index = browser->GetTabStripModel()->GetIndexOfWebContents(contents);
-   if (index == TabStripModel::kNoTab) {
--    DUMP_WILL_BE_NOTREACHED()
--        << "CloseWebContents called for tab not in our strip";
-     return;
-   }
+-  CHECK_NE(index, TabStripModel::kNoTab)
+-      << "CloseWebContents called for tab not in our strip";
++  if (index == TabStripModel::kNoTab) {
++    return;
++  }
  
+   uint32_t close_types = TabCloseTypes::CLOSE_NONE;
 diff --git chrome/browser/ui/browser_ui_controller/browser_ui_controller.cc chrome/browser/ui/browser_ui_controller/browser_ui_controller.cc
 index fcf93fb913dc14fdab2483706c564149fc29f333..1f15757ab52ca6944459611b69a1491756a1e506 100644
 --- chrome/browser/ui/browser_ui_controller/browser_ui_controller.cc
 +++ chrome/browser/ui/browser_ui_controller/browser_ui_controller.cc
 @@ -11,8 +11,10 @@
- #include "base/check_op.h"
+ #include "base/feature_list.h"
  #include "base/task/single_thread_task_runner.h"
  #include "base/trace_event/trace_event.h"
 +#include "cef/libcef/features/features.h"

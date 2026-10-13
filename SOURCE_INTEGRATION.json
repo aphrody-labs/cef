@@ -3,6 +3,7 @@
   "upstreamRepository": "https://github.com/chromiumembedded/cef",
   "upstreamRevision": "a875f407e36bdf4fe6c31622e150ce73f77629c8",
   "upstreamCommitCount": 3659,
+  "sourceCommitCount": 3663,
   "branch": "aphrody-chromium157",
   "upstreamChromium": "156.0.8078.0",
   "targetChromium": "157.0.8099.0",

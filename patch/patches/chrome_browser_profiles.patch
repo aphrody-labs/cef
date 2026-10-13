@@ -92,9 +92,9 @@ index 81e83a88483367ffb93434cd6223a080ee42593d..0634a543bc3e954b0ebb964e8045d7aa
  #include "build/build_config.h"
  #include "build/chromeos_buildflags.h"
 +#include "cef/libcef/features/features.h"
- #include "chrome/browser/background/background_contents_service_factory.h"
- #include "chrome/browser/background_fetch/background_fetch_delegate_factory.h"
- #include "chrome/browser/background_fetch/background_fetch_delegate_impl.h"
+ #include "chrome/browser/after_startup_task_utils.h"
+ #include "chrome/browser/autocomplete/autocomplete_scoring_model_service_factory.h"
+ #include "chrome/browser/autocomplete/on_device_tail_model_service_factory.h"
 @@ -238,6 +239,10 @@
  #include "chrome/browser/background/extensions/background_mode_manager.h"  // nogncheck crbug.com/40147906
  #endif

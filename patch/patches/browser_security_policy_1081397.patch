@@ -2,12 +2,13 @@ diff --git content/browser/renderer_host/navigation_request.cc content/browser/r
 index 2d9befa5eb11c3d9cba54005486761ec2e3eeff3..4c700d497478eabd7ddae203bd3d5368fedc0c91 100644
 --- content/browser/renderer_host/navigation_request.cc
 +++ content/browser/renderer_host/navigation_request.cc
-@@ -397,8 +397,13 @@ void AddAdditionalRequestHeaders(
+@@ -397,9 +397,13 @@ void AddAdditionalRequestHeaders(
      blink::mojom::Referrer* referrer,
      FrameTreeNode* frame_tree_node,
      bool is_browser_initiated) {
--  if (!url.SchemeIsHTTPOrHTTPS())
+-  if (!url.SchemeIsHTTPOrHTTPS()) {
 -    return;
+-  }
 +  // The upstream early-return for non-HTTP(S) URLs is removed so that
 +  // embedder-registered custom standard schemes (CEF schemes declared as
 +  // SECURE and CORS_ENABLED) get the same Origin, User-Agent and referrer

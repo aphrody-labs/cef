@@ -424,10 +424,11 @@ diff --git ui/views/controls/menu/menu_item_view.cc ui/views/controls/menu/menu_
 index 89ffaf3d3776d270795360f37c5869ae94587242..e84158a222e7ad7e7d55d9171aa015af2ee4d49f 100644
 --- ui/views/controls/menu/menu_item_view.cc
 +++ ui/views/controls/menu/menu_item_view.cc
-@@ -1357,6 +1357,15 @@ void MenuItemView::PaintBackground(gfx::Canvas* canvas,
+@@ -1399,7 +1399,16 @@ void MenuItemView::PaintBackground(gfx::Canvas* canvas,
      SkRRect rounded_rect;
      rounded_rect.setRectRadii(gfx::RectFToSkRect(highlight_bounds), radii);
      canvas->sk_canvas()->drawRRect(rounded_rect, flags);
+     }
 +    return;
 +  }
 +
@@ -811,7 +812,7 @@ index e0ce0ffb230380f8ad70a2645c1095adf6e31cf5..6a445e09b302254afcb2cf01ac41106c
 --- ui/views/view.h
 +++ ui/views/view.h
 @@ -27,6 +27,7 @@
- #include "base/memory/raw_ptr.h"
+ #include "base/memory/sanitized_object.h"
  #include "base/observer_list.h"
  #include "base/scoped_observation.h"
 +#include "base/supports_user_data.h"
@@ -827,7 +828,7 @@ index e0ce0ffb230380f8ad70a2645c1095adf6e31cf5..6a445e09b302254afcb2cf01ac41106c
 +                          public base::SupportsUserData {
    // Do not remove this macro!
    // The macro is maintained by the memory safety team.
-   ADVANCED_MEMORY_SAFETY_CHECKS();
+   SANITIZED_OBJECT();
 @@ -648,7 +650,7 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
  
    // Return the preferred height for a specific width. It is a helper function

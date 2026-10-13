@@ -230,10 +230,10 @@ diff --git ui/aura/native_window_occlusion_tracker_win.cc ui/aura/native_window_
 index 27cb7f79df34586b28fd53b5e8c1af993d73f421..bf85f189b7ca6f649366e608db82812d3a179dd5 100644
 --- ui/aura/native_window_occlusion_tracker_win.cc
 +++ ui/aura/native_window_occlusion_tracker_win.cc
-@@ -103,6 +103,13 @@ void NativeWindowOcclusionTrackerWin::Enable(Window* window) {
-   // when it's no longer true that all windows are minimized, and when the
-   // window is destroyed.
-   HWND root_window_hwnd = window->GetHost()->GetAcceleratedWidget();
+@@ -107,6 +107,13 @@ void NativeWindowOcclusionTrackerWin::Enable(Window* window) {
+   HWND widget_hwnd = window->GetHost()->GetAcceleratedWidget();
+   HWND root_window_hwnd = ::GetAncestor(widget_hwnd, GA_ROOT);
+ 
 +
 +  // Delay occlusion tracking for initially-minimized windows.
 +  // See CEF issue #3638.
@@ -241,9 +241,9 @@ index 27cb7f79df34586b28fd53b5e8c1af993d73f421..bf85f189b7ca6f649366e608db82812d
 +    return;
 +  }
 +
-   window->AddObserver(this);
-   // Remember this mapping from hwnd to Window*.
-   hwnd_root_window_map_[root_window_hwnd] = window;
+   // Remember the mapping from this window back to the real root hwnd.
+   hwnd_widget_to_app_root_map_[window] = root_window_hwnd;
+ 
 diff --git ui/base/mojom/window_show_state.mojom ui/base/mojom/window_show_state.mojom
 index aeaf8e35f7eda89598149117fe8508d197bf2610..4b7cc3f03d3cf9c91ac8efe11ae820cf2b34b8b0 100644
 --- ui/base/mojom/window_show_state.mojom

@@ -86,13 +86,10 @@ index c6dfce70e64ea638269ef42597c219b920984f3d..3821271d32027e5dd7c182b03bfe9db7
    // Start the sampling profiler as early as possible - namely, once the thread
    // pool has been created.
    sampling_profiler_ = std::make_unique<MainThreadStackSamplingProfiler>();
-@@ -1546,6 +1557,7 @@ void ChromeMainDelegate::PreSandboxStartup() {
-   }
+@@ -1553,3 +1564,4 @@ void ChromeMainDelegate::PreSandboxStartup() {
  #endif
  
 +#if !BUILDFLAG(ENABLE_CEF)
-   crash_reporter::InitializeCrashKeys();
- 
  #if BUILDFLAG(IS_POSIX)
 @@ -1556,20 +1568,25 @@ void ChromeMainDelegate::PreSandboxStartup() {
    InitMacCrashReporter(command_line, process_type);
@@ -458,22 +455,20 @@ index 691b61da00a6fe1096b00a50136d9828e70c00f4..0753aa2743987fdbffe6898c31a7ca86
  #include "chrome/browser/about_flags.h"
  #include "chrome/browser/active_use_util.h"
  #include "chrome/browser/browser_features.h"
-@@ -372,6 +373,7 @@ void UpdatePwaLaunchersForProfile(const base::FilePath& profile_dir) {
- }
- 
+@@ -376,4 +377,5 @@ void MigratePinnedTaskBarShortcutsIfNeeded() {
  void MigratePinnedTaskBarShortcutsIfNeeded() {
 +#if !BUILDFLAG(ENABLE_CEF)
-   // Update this number when users should go through a taskbar shortcut
-   // migration again. The last reason to do this was crrev.com/798174. @
-   // 86.0.4231.0.
-@@ -392,6 +394,7 @@ void MigratePinnedTaskBarShortcutsIfNeeded() {
-           prefs::kShortcutMigrationVersion, version_info::GetVersionNumber()));
-     }
+   PrefService* local_state = g_browser_process->local_state();
+   if (!local_state) {
+     return;
+@@ -421,6 +423,7 @@ void MigratePinnedTaskBarShortcutsIfNeeded() {
+         base::Unretained(local_state)));
    }
 +#endif  // !BUILDFLAG(ENABLE_CEF)
  }
  
  void MaybeBlockDynamicCodeForBrowserProcess() {
+   // This mitigation is not enabled if running in single-process mode or the GPU
 @@ -632,6 +635,7 @@ int ChromeBrowserMainPartsWin::PreCreateThreads() {
  }
  
@@ -499,12 +494,13 @@ diff --git chrome/browser/chrome_content_browser_client.cc chrome/browser/chrome
 index c8eee68c73e47b8fec020b7835476f1b3219773a..9208c0f798f603d47c2eaeb0c96ac0a0d2106f86 100644
 --- chrome/browser/chrome_content_browser_client.cc
 +++ chrome/browser/chrome_content_browser_client.cc
-@@ -56,6 +56,7 @@
+@@ -56,7 +56,8 @@
  #include "build/branding_buildflags.h"
  #include "build/build_config.h"
  #include "build/config/chromebox_for_meetings/buildflags.h"  // PLATFORM_CFM
 +#include "cef/libcef/features/features.h"
  #include "chrome/browser/accessibility/caption_settings_dialog.h"
+ #include "chrome/browser/accessibility/page_colors_controller.h"
  #include "chrome/browser/actor/actor_commit_deferring_condition.h"
  #include "chrome/browser/after_startup_task_utils.h"
 @@ -1561,6 +1562,8 @@ ChromeContentBrowserClient::GetPopupNavigationDelegateFactoryForTesting() {
@@ -558,13 +554,14 @@ index c8eee68c73e47b8fec020b7835476f1b3219773a..9208c0f798f603d47c2eaeb0c96ac0a0
  }
  
  std::vector<base::FilePath>
-@@ -8434,11 +8446,11 @@ void ChromeContentBrowserClient::OnKeepaliveRequestStarted(
+@@ -8434,12 +8446,12 @@ void ChromeContentBrowserClient::OnKeepaliveRequestStarted(
    const auto now = base::TimeTicks::Now();
    const auto timeout = GetKeepaliveTimerTimeout(context);
    keepalive_deadline_ = std::max(keepalive_deadline_, now + timeout);
 -  if (keepalive_deadline_ > now && !keepalive_timer_.IsRunning()) {
 +  if (keepalive_deadline_ > now && !keepalive_timer_->IsRunning()) {
-     if (!KeepAliveRegistry::GetInstance()->IsShuttingDown()) {
+     if (!KeepAliveRegistry::GetInstance()->IsShuttingDown() &&
+         !browser_shutdown::HasShutdownStarted()) {
        DVLOG(1) << "Starting a keepalive timer(" << timeout.InSecondsF()
                 << " seconds)";
 -      keepalive_timer_.Start(
@@ -645,7 +642,7 @@ index 35b02686a1d21b4311b222b85f2041a2c2cd5949..1b9522fec1d90c595452f3f3acc6a280
 +
  #if BUILDFLAG(ENABLE_EXTENSIONS)
  #include "chrome/browser/accessibility/animation_policy_prefs.h"
- #include "extensions/browser/api/audio/audio_api.h"
+ #if BUILDFLAG(IS_CHROMEOS)
 @@ -1848,6 +1853,11 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
  
    // This is intentionally last.

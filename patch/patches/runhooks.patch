@@ -39,7 +39,7 @@ index 8bcba3e3f871dfe90e4e98c8141349cea9bb3720..5bb3d746e005e2e674cf2655930a024b
          os.environ['PATH'] = runtime_path + os.path.pathsep + os.environ['PATH']
      elif sys.platform == 'win32' and not depot_tools_win_toolchain:
 +        has_override_path = True
-         if not 'GYP_MSVS_OVERRIDE_PATH' in os.environ:
+         if 'GYP_MSVS_OVERRIDE_PATH' not in os.environ:
 +            has_override_path = False
              os.environ['GYP_MSVS_OVERRIDE_PATH'] = DetectVisualStudioPath()
  

@@ -158,7 +158,7 @@ index cd125f445f0fee01e37f6634dcb93eb23ae08fb4..ded45ca4a85a2c2f15387292351a3505
 --- content/app/content_main_runner_impl.h
 +++ content/app/content_main_runner_impl.h
 @@ -32,7 +32,7 @@ class BackgroundTracingManagerImpl;
- class BrowserMemoryCoordinator;
+ class BrowserMemoryCoordinatorImpl;
  class MojoIpcSupport;
  
 -class ContentMainRunnerImpl : public ContentMainRunner {

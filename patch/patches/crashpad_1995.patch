@@ -1,5 +1,5 @@
 diff --git chrome/chrome_elf/BUILD.gn chrome/chrome_elf/BUILD.gn
-index 0f2c819248a6e3e2895d17a44fd9929e8fdf9cd1..c8ab414ed114b9c65934dd62dd606bc5896f9718 100644
+index 5cacf4f85a..f56368ba1f 100644
 --- chrome/chrome_elf/BUILD.gn
 +++ chrome/chrome_elf/BUILD.gn
 @@ -7,6 +7,7 @@
@@ -45,7 +45,7 @@ index 0f2c819248a6e3e2895d17a44fd9929e8fdf9cd1..c8ab414ed114b9c65934dd62dd606bc5
  
  source_set("dll_hash") {
 diff --git chrome/chrome_elf/crash/crash_helper.cc chrome/chrome_elf/crash/crash_helper.cc
-index 975ad7d990fe9f0c5e1b6d636898b91b9416a5d5..1d75a1250afb70a81d1ca15a85dbbcf77a9215ab 100644
+index 975ad7d990..1d75a1250a 100644
 --- chrome/chrome_elf/crash/crash_helper.cc
 +++ chrome/chrome_elf/crash/crash_helper.cc
 @@ -12,12 +12,17 @@
@@ -79,7 +79,7 @@ index 975ad7d990fe9f0c5e1b6d636898b91b9416a5d5..1d75a1250afb70a81d1ca15a85dbbcf7
    g_crash_helper_enabled = true;
    return true;
 diff --git chrome/common/crash_keys.cc chrome/common/crash_keys.cc
-index 523879a76b60930953de2c1594af84e3ebda5b65..ba514934713f06d1f59e932fd74e21d273b92da4 100644
+index 523879a76b..ba51493471 100644
 --- chrome/common/crash_keys.cc
 +++ chrome/common/crash_keys.cc
 @@ -6,6 +6,7 @@
@@ -121,7 +121,7 @@ index 523879a76b60930953de2c1594af84e3ebda5b65..ba514934713f06d1f59e932fd74e21d2
  #if BUILDFLAG(IS_WIN)
    auto process_token = base::win::AccessToken::FromCurrentProcess();
 diff --git chrome/common/crash_keys.h chrome/common/crash_keys.h
-index a274b3e364084c90d2f4783bab576ac85af285ea..3d995cf6433991f6f8abe7cd2d4eac17dcba55dd 100644
+index a274b3e364..3d995cf643 100644
 --- chrome/common/crash_keys.h
 +++ chrome/common/crash_keys.h
 @@ -5,6 +5,7 @@
@@ -144,7 +144,7 @@ index a274b3e364084c90d2f4783bab576ac85af285ea..3d995cf6433991f6f8abe7cd2d4eac17
  // on the given `command_line`. For non-browser processes, allocates crash keys
  // from the switch value set by AppendStringAnnotationsCommandLineSwitch().
 diff --git components/crash/core/app/crash_reporter_client.cc components/crash/core/app/crash_reporter_client.cc
-index 0941e78cef59417f8ded359c02d8e97477908ea9..5353b701011c526d7ad9b1b5aeb6c9ea3192ded2 100644
+index 0941e78cef..5353b70101 100644
 --- components/crash/core/app/crash_reporter_client.cc
 +++ components/crash/core/app/crash_reporter_client.cc
 @@ -114,6 +114,23 @@ bool CrashReporterClient::ReportingIsEnforcedByPolicy(bool* breakpad_enabled) {
@@ -172,7 +172,7 @@ index 0941e78cef59417f8ded359c02d8e97477908ea9..5353b701011c526d7ad9b1b5aeb6c9ea
  unsigned int CrashReporterClient::GetCrashDumpPercentage() {
    return 100;
 diff --git components/crash/core/app/crash_reporter_client.h components/crash/core/app/crash_reporter_client.h
-index 70f0b4c8d4bbf7e340c0e01d3208e64561de8f9a..521a1ba0cd3a2cdbd47393406aa7aeb38a95f856 100644
+index 70f0b4c8d4..521a1ba0cd 100644
 --- components/crash/core/app/crash_reporter_client.h
 +++ components/crash/core/app/crash_reporter_client.h
 @@ -228,6 +228,20 @@ class CrashReporterClient {
@@ -197,7 +197,7 @@ index 70f0b4c8d4bbf7e340c0e01d3208e64561de8f9a..521a1ba0cd3a2cdbd47393406aa7aeb3
    // These streams are extracted upon crash and attached to the minidump.
    //
 diff --git components/crash/core/app/crashpad.cc components/crash/core/app/crashpad.cc
-index db68eaa22030aca74f31a9d8612b4952a3b25642..e02625e502b73f10569ab54714ad4826ccff87b0 100644
+index db68eaa220..e02625e502 100644
 --- components/crash/core/app/crashpad.cc
 +++ components/crash/core/app/crashpad.cc
 @@ -128,7 +128,8 @@ bool InitializeCrashpadImpl(bool initial_client,
@@ -211,7 +211,7 @@ index db68eaa22030aca74f31a9d8612b4952a3b25642..e02625e502b73f10569ab54714ad4826
          ->set_system_crash_reporter_forwarding(crashpad::TriState::kDisabled);
    }
 diff --git components/crash/core/app/crashpad_linux.cc components/crash/core/app/crashpad_linux.cc
-index 879b0a5d1ebbb63499a5e0e57d38d5d26b862bbf..c21345f949579d39a059b53d35b548418fb1b034 100644
+index 879b0a5d1e..c21345f949 100644
 --- components/crash/core/app/crashpad_linux.cc
 +++ components/crash/core/app/crashpad_linux.cc
 @@ -29,6 +29,7 @@
@@ -284,24 +284,25 @@ index 879b0a5d1ebbb63499a5e0e57d38d5d26b862bbf..c21345f949579d39a059b53d35b54841
                                annotations, arguments, false, false, attachments,
                                preserve_handles));
 diff --git components/crash/core/app/crashpad_mac.mm components/crash/core/app/crashpad_mac.mm
-index 0b236c31fdad45679ce7935ed7b685136aff3205..98ffe7470c4ac1ba68f438750d4b13a8f758208e 100644
+index 011458218a..a83e8397b0 100644
 --- components/crash/core/app/crashpad_mac.mm
 +++ components/crash/core/app/crashpad_mac.mm
-@@ -19,10 +19,13 @@
- #include "base/apple/foundation_util.h"
+@@ -21,11 +21,14 @@
  #include "base/check.h"
  #include "base/files/file_path.h"
+ #include "base/no_destructor.h"
 +#include "base/path_service.h"
  #include "base/strings/string_number_conversions.h"
  #include "base/strings/sys_string_conversions.h"
  #include "build/branding_buildflags.h"
  #include "components/crash/core/app/crash_reporter_client.h"
 +#include "components/crash/core/app/crash_switches.h"
+ #include "components/crash/core/app/shared_memory_user_stream_mach_port.h"
 +#include "content/public/common/content_paths.h"
  #include "third_party/crashpad/crashpad/client/crash_report_database.h"
  #include "third_party/crashpad/crashpad/client/crashpad_client.h"
  #include "third_party/crashpad/crashpad/client/crashpad_info.h"
-@@ -40,15 +43,22 @@ std::map<std::string, std::string> GetProcessSimpleAnnotations() {
+@@ -43,15 +46,22 @@ std::map<std::string, std::string> GetProcessSimpleAnnotations() {
      std::map<std::string, std::string> process_annotations;
      @autoreleasepool {
        NSBundle* outer_bundle = base::apple::OuterBundle();
@@ -330,7 +331,7 @@ index 0b236c31fdad45679ce7935ed7b685136aff3205..98ffe7470c4ac1ba68f438750d4b13a8
  
  #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
        // Empty means stable.
-@@ -79,12 +89,20 @@ std::map<std::string, std::string> GetProcessSimpleAnnotations() {
+@@ -82,12 +92,20 @@ std::map<std::string, std::string> GetProcessSimpleAnnotations() {
          }
        }
  
@@ -356,7 +357,7 @@ index 0b236c31fdad45679ce7935ed7b685136aff3205..98ffe7470c4ac1ba68f438750d4b13a8
      }  // @autoreleasepool
      for (auto& [key, value] :
           GetCrashReporterClient()->GetExtraProcessAnnotations()) {
-@@ -151,10 +169,10 @@ bool PlatformCrashpadInitialization(
+@@ -156,10 +174,10 @@ bool PlatformCrashpadInitialization(
  
    if (initial_client) {
      @autoreleasepool {
@@ -371,21 +372,18 @@ index 0b236c31fdad45679ce7935ed7b685136aff3205..98ffe7470c4ac1ba68f438750d4b13a8
  
        // Is there a way to recover if this fails?
        CrashReporterClient* crash_reporter_client = GetCrashReporterClient();
-@@ -189,6 +207,12 @@ bool PlatformCrashpadInitialization(
+@@ -194,6 +212,9 @@ bool PlatformCrashpadInitialization(
              "--reset-own-crash-exception-port-to-system-default");
        }
  
-+      // Since we're using the same subprocess helper exe we must specify the
-+      // process type.
 +      arguments.push_back(std::string("--type=") + switches::kCrashpadHandler);
-+
 +      crash_reporter_client->GetCrashOptionalArguments(&arguments);
 +
-       bool result = GetCrashpadClient().StartHandler(
-           handler_path, *database_path, metrics_path, url,
-           GetProcessSimpleAnnotations(), arguments, true, false);
+       base::apple::ScopedMachReceiveRight embedder_port;
+       if (browser_process) {
+         embedder_port = SendSharedMemoryUserStreamsToPort(
 diff --git components/crash/core/app/crashpad_win.cc components/crash/core/app/crashpad_win.cc
-index c5b54c43492be1d1c36af79620d1dc965534dae7..4975973cb6ad9ec5a510230c2472c1e0090e7d4e 100644
+index c5b54c4349..4975973cb6 100644
 --- components/crash/core/app/crashpad_win.cc
 +++ components/crash/core/app/crashpad_win.cc
 @@ -42,8 +42,8 @@ void GetPlatformCrashpadAnnotations(

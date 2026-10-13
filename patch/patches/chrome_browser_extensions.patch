@@ -2,12 +2,13 @@ diff --git chrome/browser/extensions/api/chrome_extensions_api_client.cc chrome/
 index e875b597230e0626c036797971fd06b3b6dc8061..567580698f9ce55f094ff1967ef6df14e21cd3a6 100644
 --- chrome/browser/extensions/api/chrome_extensions_api_client.cc
 +++ chrome/browser/extensions/api/chrome_extensions_api_client.cc
-@@ -16,6 +16,7 @@
+@@ -16,7 +16,8 @@
  #include "base/task/single_thread_task_runner.h"
  #include "build/build_config.h"
  #include "build/chromeos_buildflags.h"
 +#include "cef/libcef/features/features.h"
  #include "chrome/browser/extensions/api/automation_internal/chrome_automation_internal_api_delegate.h"
+ #include "chrome/browser/extensions/api/cookies/chrome_cookies_api_delegate.h"
  #include "chrome/browser/extensions/api/declarative_content/chrome_content_rules_registry.h"
  #include "chrome/browser/extensions/api/declarative_content/default_content_predicate_evaluators.h"
 @@ -102,6 +103,10 @@
